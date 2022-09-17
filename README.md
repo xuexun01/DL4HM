@@ -29,13 +29,13 @@
 * *trajectory generation*
 * *flow generation*
 
-&emsp;&emsp;**Next-location prediction** is about forecasting which location an individual will visit given historical data about their mobility. And more infos you can get from [here]().
+&emsp;&emsp;**Next-location prediction** is about forecasting which location an individual will visit given historical data about their mobility. And more infos you can get from [here](https://github.com/xuexun01/DL4HM/tree/main/next-location%20prediction).
 
-&emsp;&emsp;**Crowd flow prediction** is the task of forecasting the incoming and outgoing flows of people on a geographic region. And more infos, [here]().
+&emsp;&emsp;**Crowd flow prediction** is the task of forecasting the incoming and outgoing flows of people on a geographic region. And more infos, [here](https://github.com/xuexun01/DL4HM/tree/main/crowd%20flow%20prediction).
 
-&emsp;&emsp;**Trajectory generation** deals with generating synthetic trajectories that can reproduce, realistically, the individual statistical patterns of human mobility. And more details, [here]().
+&emsp;&emsp;**Trajectory generation** deals with generating synthetic trajectories that can reproduce, realistically, the individual statistical patterns of human mobility. And more details, [here](https://github.com/xuexun01/DL4HM/tree/main/trajectory%20generation).
 
-&emsp;&emsp;**Flow generation** deals with generating realistic flows among locations, given their characteristics and the distance among them, and without any knowledge about the real flows. More details click [here]().
+&emsp;&emsp;**Flow generation** deals with generating realistic flows among locations, given their characteristics and the distance among them, and without any knowledge about the real flows. More details click [here](https://github.com/xuexun01/DL4HM/tree/main/flow%20generation).
 
 #### 3. Deep learning models used in human mobility
 
