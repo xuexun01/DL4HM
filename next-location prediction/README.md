@@ -32,6 +32,21 @@
 
 ### 2. Problem definition
 
+&emsp;&emsp;Next-location prediction consists of forecasting the next location an individual will visit in the future, given their historical mobility data.
+
+&emsp;&emsp;Formally, let $u$ be a user, $T_u$ their trajectory, and $p_t \in T_u, u$'s current location, next-location prediction aims at predicting $u$'s next destination $p_{t+1}$. This problem is treated in two ways:
+
+* as a multi-classification task
+
+    we have as many classes as locations and we aim at predicting the next visited location: $p_{t+1}$
+
+* as a regression task
+
+    predicting $p_{t+1} = (x_{t+1}, y_{t+1})$, where $x_{t+1}$ and $y_{t+1}$ are the next location's geographic coordinates.
+
+&emsp;&emsp;A variant of next-location prediction aims at forecasting the next Point Of Interest(POI) $p_{t+1}$ an individual $u$ will visit. given their trajectory $T_u$.
+
+&emsp;&emsp;Regardless of the specific definition, next-location predictors output a ranking of the probability of each location to be $u$'s next destination.
 
 ### 3. Metrics
 
