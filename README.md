@@ -4,7 +4,7 @@
 
 *@Author: xuexun01*
 
-*This repository is constructed referring to the paper<A survey on Deep learning for Human Mobility>*
+This repository is constructed referring to the paper *A survey on Deep learning for Human Mobility*.
 
 - [Deep Learning for Human Mobility](#deep-learning-for-human-mobility)
     - [1. Introduction](#1-introduction)
