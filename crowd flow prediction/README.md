@@ -3,7 +3,8 @@
 *@Date: 2022-9-20*
 *@Author: xuexun*
 
-
+**Context**
+[TOC]
 
 ### 1. Introduction
 
@@ -11,8 +12,10 @@
 
 &emsp;&emsp;Crowd flow prediction requires dealing with both spatial and temporal dependencies. Indeed. a region's out-flow may affect the in-flows of both near and far regions. At the same time, crowd flows are chracterized by temporal closeness, trends, and periodicity. Temporal closeness marks the dependencies between events that are close in time; trends highlight patterns that repeat over time; periodicity captures the repetitive nature of relevant events. Futhermore, exogenous factors such as weather conditions, holidays and the presence of public city events may affect crowd flow patterns.
 
-### 2. Metrics
+### 2. Problem definition
+
+### 3. Metrics
 
 &emsp;&emsp;The performance of crowd flow predictors is evaluated as the error between the empirical crowd flows and the predicted ones. E.g. Mean Absolute Errpr(MAE), Root Mean Squared Error(RMSE), Mean Absolute Percent Error(MAPE).
 
-### 3. Related papers
+### 4. Related papers

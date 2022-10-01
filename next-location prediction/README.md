@@ -3,6 +3,8 @@
 *@Date: 2022-9-18*
 *@Author: xuexun01*
 
+**Context**
+[TOC]
 
 ### 1. Introduction
 
@@ -23,7 +25,10 @@
     e.g. POIs, friendships
 
 
-### 2. Metrics
+### 2. Problem definition
+
+
+### 3. Metrics
 
 &emsp;&emsp;Next-location prediction can be intended as a regression task or a multi-class classification task. Both have their own metric. Regardless of metrics, next-location preditors output a ranking of the probability of each location to be an individual's next destination. 
 
@@ -36,9 +41,9 @@
     accuracy, recall, F1-score, Mean Average Percentage Error, Area Under the Curve
 
 
-### 3. Related papers
+### 4. Related papers
 
-#### 3.1 [DeepMove: Predicting Human Mobility with Attentional Recurrent Networks](./DeepMove%3A%20Predicting%20Human%20Mobility%20with%20Attentional%20Recurrent%20Networks.pdf)
+#### 4.1 [DeepMove: Predicting Human Mobility with Attentional Recurrent Networks](./DeepMove%3A%20Predicting%20Human%20Mobility%20with%20Attentional%20Recurrent%20Networks.pdf)
 
 Contribution:
 
