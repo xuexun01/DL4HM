@@ -16,7 +16,7 @@ This repository is constructed referring to the paper *A survey on Deep learning
 
 #### 1. Introduction
 
-&emsp;&emsp;**Human Mobility** studys mainly about individual and collective mobility patterns, or the generation model that can capture and simulate the spatiotemporal structures and regularities in human trahectories.
+&emsp;&emsp;**Human Mobility** studys mainly about individual and collective mobility patterns, or the generation model that can capture and simulate the spatiotemporal structures and regularities in human trajectories.
 
 &emsp;&emsp;Nowadays, the significance of human mobility field is increasing day by day. It's beneficial to the applications such as disease spreading, urban planning, traffic forecasting, and more are. Meanwhile, the proliferation of digital mobility data ,the surge of computing power and the emerging of effective deep learning method, triggered the applicaiton of deep learning to human mobility.
 
