@@ -5,7 +5,7 @@ import scipy.sparse as sp
 import torch
 
 def load_adj(dataset_name):
-    dataset_path = '../data'
+    dataset_path = '/home/xuexun/Desktop/code/DL4HM/dataset'
     dataset_path = os.path.join(dataset_path, dataset_name)
     adj = sp.load_npz(os.path.join(dataset_path, 'adj.npz'))
     adj = adj.tocsc()
@@ -20,7 +20,7 @@ def load_adj(dataset_name):
     return adj, n_vertex
 
 def load_data(dataset_name, len_train, len_val):
-    dataset_path = '../data'
+    dataset_path = '/home/xuexun/Desktop/code/DL4HM/dataset'
     dataset_path = os.path.join(dataset_path, dataset_name)
     vel = pd.read_csv(os.path.join(dataset_path, 'vel.csv'))
 

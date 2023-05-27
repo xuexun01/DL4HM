@@ -1,29 +1,11 @@
-# -*- encoding: utf-8 -*-
-'''
-@File    :   model.py
-@Time    :   2021/02/19 21:10:00
-@Author  :   Fei gao 
-@Contact :   feig@mail.bnu.edu.cn
-BNU, Beijing, China
-'''
-import copy
-
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from torch.nn.modules.loss import BCEWithLogitsLoss
+from layer import StructuralAttentionLayer, TemporalAttentionLayer
+import networkx as nx
 
-from models.layers import StructuralAttentionLayer, TemporalAttentionLayer
-from utils.utilities import fixed_unigram_candidate_sampler
 
 class DySAT(nn.Module):
     def __init__(self, args, num_features, time_length):
-        """[summary]
-
-        Args:
-            args ([type]): [description]
-            time_length (int): Total timesteps in dataset.
-        """
         super(DySAT, self).__init__()
         self.args = args
         if args.window < 0:
@@ -31,17 +13,15 @@ class DySAT(nn.Module):
         else:
             self.num_time_steps = min(time_length, args.window + 1)  # window = 0 => only self.
         self.num_features = num_features
-
         self.structural_head_config = list(map(int, args.structural_head_config.split(",")))
         self.structural_layer_config = list(map(int, args.structural_layer_config.split(",")))
         self.temporal_head_config = list(map(int, args.temporal_head_config.split(",")))
         self.temporal_layer_config = list(map(int, args.temporal_layer_config.split(",")))
         self.spatial_drop = args.spatial_drop
         self.temporal_drop = args.temporal_drop
-
         self.structural_attn, self.temporal_attn = self.build_model()
+        self.result = nn.Linear(self.temporal_layer_config*2, 1)
 
-        self.bceloss = BCEWithLogitsLoss()
 
     def forward(self, graphs):
 
@@ -50,7 +30,6 @@ class DySAT(nn.Module):
         for t in range(0, self.num_time_steps):
             structural_out.append(self.structural_attn(graphs[t]))
         structural_outputs = [g.x[:,None,:] for g in structural_out] # list of [Ni, 1, F]
-
         # padding outputs along with Ni
         maximum_node_num = structural_outputs[-1].shape[0]
         out_dim = structural_outputs[-1].shape[-1]
@@ -60,9 +39,9 @@ class DySAT(nn.Module):
             padded = torch.cat((out, zero_padding), dim=0)
             structural_outputs_padded.append(padded)
         structural_outputs_padded = torch.cat(structural_outputs_padded, dim=1) # [N, T, F]
-        
         # Temporal Attention forward
         temporal_out = self.temporal_attn(structural_outputs_padded)
+        
         return temporal_out
 
     def build_model(self):
@@ -79,7 +58,6 @@ class DySAT(nn.Module):
                                              residual=self.args.residual)
             structural_attention_layers.add_module(name="structural_layer_{}".format(i), module=layer)
             input_dim = self.structural_layer_config[i]
-        
         # 2: Temporal Attention Layers
         input_dim = self.structural_layer_config[-1]
         temporal_attention_layers = nn.Sequential()
@@ -91,29 +69,24 @@ class DySAT(nn.Module):
                                            residual=self.args.residual)
             temporal_attention_layers.add_module(name="temporal_layer_{}".format(i), module=layer)
             input_dim = self.temporal_layer_config[i]
-
+    
         return structural_attention_layers, temporal_attention_layers
-
-    def get_loss(self, feed_dict):
-        node_1, node_2, node_2_negative, graphs = feed_dict.values()
+    
+    def get_flow(self, items):
+        nodes, graphs = items.values()
         # run gnn
         final_emb = self.forward(graphs) # [N, T, F]
-        self.graph_loss = 0
+        results = []
         for t in range(self.num_time_steps - 1):
             emb_t = final_emb[:, t, :].squeeze() #[N, F]
-            source_node_emb = emb_t[node_1[t]]
-            tart_node_pos_emb = emb_t[node_2[t]]
-            tart_node_neg_emb = emb_t[node_2_negative[t]]
-            pos_score = torch.sum(source_node_emb*tart_node_pos_emb, dim=1)
-            neg_score = -torch.sum(source_node_emb[:, None, :]*tart_node_neg_emb, dim=2).flatten()
-            pos_loss = self.bceloss(pos_score, torch.ones_like(pos_score))
-            neg_loss = self.bceloss(neg_score, torch.ones_like(neg_score))
-            graphloss = pos_loss + self.args.neg_weight*neg_loss
-            self.graph_loss += graphloss
-        return self.graph_loss
-
-            
-
-
-
-
+            graph = nx.DiGraph()
+            for origin_node in nodes:
+                for dest_node in nodes:
+                    if origin_node == dest_node:
+                        graph.add_edge(origin_node, dest_node, weight=0)
+                        continue
+                    x = torch.cat((emb_t[origin_node], emb_t[dest_node]), dim=1)
+                    flow = self.result(x)
+                    graph.add_edge(origin_node, dest_node, weight=flow)
+        results.append(graph)
+        return results

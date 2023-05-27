@@ -113,7 +113,6 @@ class MyDataset(Dataset):
             feed_dict['node_2']=node_2_list
             feed_dict['node_2_neg']=node_2_neg_list
             feed_dict["graphs"] = self.pyg_graphs
-        
             self.data_items[node] = feed_dict
 
     @staticmethod

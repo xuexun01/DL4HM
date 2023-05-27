@@ -12,7 +12,7 @@ np.random.seed(123)
 
 def load_graphs(dataset_str):
     """Load graph snapshots given the name of dataset"""
-    with open("data/{}/{}".format(dataset_str, "graph.pkl"), "rb") as f:
+    with open("/home/xuexun/Desktop/code/DL4HM/dataset/{}/{}".format(dataset_str, "graph.pkl"), "rb") as f:
         graphs = pkl.load(f)
     print("Loaded {} graphs ".format(len(graphs)))
     adjs = [nx.adjacency_matrix(g) for g in graphs]
@@ -39,6 +39,7 @@ def get_evaluation_data(graphs):
 
     return train_edges, train_edges_false, val_edges, val_edges_false, test_edges, test_edges_false
 
+
 def create_data_splits(graph, next_graph, val_mask_fraction=0.2, test_mask_fraction=0.6):
     edges_next = np.array(list(nx.Graph(next_graph).edges()))
     edges_positive = []   # Constraint to restrict new links to existing nodes.
@@ -55,7 +56,9 @@ def create_data_splits(graph, next_graph, val_mask_fraction=0.2, test_mask_fract
             test_neg, test_size=test_mask_fraction/(test_mask_fraction+val_mask_fraction))
 
     return train_edges_pos, train_edges_neg, val_edges_pos, val_edges_neg, test_edges_pos, test_edges_neg
-            
+
+
+
 def negative_sample(edges_pos, nodes_num, next_graph):
     edges_neg = []
     while len(edges_neg) < len(edges_pos):

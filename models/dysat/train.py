@@ -99,9 +99,8 @@ if __name__ == "__main__":
     #graphs, feats, adjs = load_graphs(args.dataset)
     graphs, adjs = load_graphs(args.dataset)
     if args.featureless == True:
-        feats = [scipy.sparse.identity(adjs[args.time_steps - 1].shape[0]).tocsr()[range(0, x.shape[0]), :] for x in adjs if
-             x.shape[0] <= adjs[args.time_steps - 1].shape[0]]
-
+        feats = [scipy.sparse.identity(adjs[args.time_steps - 1].shape[0]).tocsr()[range(0, x.shape[0]), :] for x in adjs if x.shape[0] <= adjs[args.time_steps - 1].shape[0]]
+    
     assert args.time_steps <= len(adjs), "Time steps is illegal"
 
     context_pairs_train = get_context_pairs(graphs, adjs)
@@ -160,7 +159,7 @@ if __name__ == "__main__":
 
         if epoch_auc_val > best_epoch_val:
             best_epoch_val = epoch_auc_val
-            torch.save(model.state_dict(), "./model_checkpoints/model.pt")
+            torch.save(model.state_dict(), "/home/xuexun/Desktop/code/DL4HM/models/dysat/model_checkpoints/model.pt")
             patient = 0
         else:
             patient += 1
@@ -172,7 +171,7 @@ if __name__ == "__main__":
                                                                 epoch_auc_val, 
                                                                 epoch_auc_test))
     # Test Best Model
-    model.load_state_dict(torch.load("./model_checkpoints/model.pt"))
+    model.load_state_dict(torch.load("/home/xuexun/Desktop/code/DL4HM/models/dysat/model_checkpoints/model.pt"))
     model.eval()
     emb = model(feed_dict["graphs"])[:, -2, :].detach().cpu().numpy()
     val_results, test_results, _, _ = evaluate_classifier(train_edges_pos,
