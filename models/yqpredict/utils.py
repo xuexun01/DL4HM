@@ -75,22 +75,26 @@ def config_logger(logfile):
 
 
 class Trainer:
-    def __init__(self, dataloader, model, optimizer, scheduler, device):
+    def __init__(self, dataloader, model, loss, optimizer, scheduler, device):
         self.dataloader = dataloader
         self.model = model
         self.optimizer = optimizer
         self.scheduler = scheduler
         self.device = device
+        self.loss = loss
 
     def train(self, epoch):
         self.model.train()
         losses = 0
         # 设置打印栏
-        for inputs, labels, _ in tqdm(self.dataloader, total = len(self.dataloader)):
-            inputs, labels = inputs.to(self.device), labels.to(self.device)
+        for dict in tqdm(self.dataloader, total = len(self.dataloader)):
+            nodes = dict['nodes']
+            graphs = dict['graphs']
+            pyg_graphs = dict['pyg_graphs']
 
             self.model.zero_grad()
-            loss = self.model.neg_log_likelihood(inputs, labels)
+            results = self.model.get_flow(nodes.to(self.device), pyg_graphs.to(self.device))
+            loss = self.loss(graphs[1:], results)
             losses += loss.item()
             loss.backward()
             self.optimizer.step()
@@ -104,20 +108,23 @@ class Trainer:
 
 
 class Tester:
-    def __init__(self, model, dataloader, device):
+    def __init__(self, model, loss, dataloader, device):
         self.model = model
         self.dataloader = dataloader
         self.device = device
+        self.loss = loss
 
     def test(self):
         self.model.eval()
         losses = 0
-        for inputs, labels, _ in tqdm(self.dataloader, total = len(self.dataloader)):
+        for dict in tqdm(self.dataloader, total = len(self.dataloader)):
+            nodes = dict['nodes']
+            graphs = dict['graphs']
+            pyg_graphs = dict['pyg_graphs']
 
-            inputs, labels = inputs.to(self.device), labels.to(self.device)
-            loss = self.model.neg_log_likelihood(inputs, labels)
+            results = self.model.get_flow(nodes.to(self.device), pyg_graphs.to(self.device))
+            loss = self.loss(graphs[1:], results)
             losses += loss.item()
-            score, tag_seq = self.model(inputs)
         
         gpu_mem_alloc = torch.cuda.max_memory_allocated() / 1000000 if torch.cuda.is_available() else 0
         print("Test Loss: {:.6f} | lr = {:.20f} | GPU occupy: {:.6f} MiB".format(loss.item(), self.optimizer.state_dict()['param_groups'][0]['lr'], gpu_mem_alloc))

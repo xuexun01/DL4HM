@@ -67,12 +67,7 @@ class StructuralAttentionLayer(nn.Module):
 
 
 class TemporalAttentionLayer(nn.Module):
-    def __init__(self, 
-                input_dim, 
-                n_heads, 
-                num_time_steps, 
-                attn_drop, 
-                residual):
+    def __init__(self, input_dim, n_heads, num_time_steps, attn_drop, residual):
         super(TemporalAttentionLayer, self).__init__()
         self.n_heads = n_heads
         self.num_time_steps = num_time_steps
@@ -108,6 +103,7 @@ class TemporalAttentionLayer(nn.Module):
         
         outputs = torch.matmul(q_, k_.permute(0,2,1)) # [hN, T, T]
         outputs = outputs / (self.num_time_steps ** 0.5)
+
         # 4: Masked (causal) softmax to compute attention weights.
         diag_val = torch.ones_like(outputs[0])
         tril = torch.tril(diag_val)
@@ -128,6 +124,7 @@ class TemporalAttentionLayer(nn.Module):
         if self.residual:
             outputs = outputs + temporal_inputs
         return outputs
+
 
     def feedforward(self, inputs):
         outputs = F.relu(self.linear(inputs))

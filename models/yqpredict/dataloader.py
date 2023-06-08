@@ -7,7 +7,7 @@ import scipy.sparse as sp
 import torch
 import torch_geometric
 from torch.utils.data import DataLoader, Dataset
-from torch_geometric.data import Data
+from torch_geometric.data import Data, Batch
 from tqdm import *
 
 
@@ -85,18 +85,13 @@ class ODMatrixDataset(Dataset):
             data = Data(x=x, edge_index=edge_index, edge_weight=edge_weight)
             pyg_graphs.append(data)
         return pyg_graphs
-    
+
+    @staticmethod
     def collate_fn(samples):
         batch_dict = {}
-        for key in ["node_1", "node_2", "node_2_neg"]:
-            data_list = []
-            for sample in samples:
-                data_list.append(sample[key])
-            concate = []
-            for t in range(len(data_list[0])):
-                concate.append(torch.cat([data[t] for data in data_list]))
-            batch_dict[key] = concate
         batch_dict["graphs"] = samples[0]["graphs"]
+        batch_dict['pyg_graphs'] = samples[0]['pyg_graphs']
+        batch_dict['nodes'] = samples[0]['nodes']
         return batch_dict
 
 
@@ -115,7 +110,7 @@ if __name__ == "__main__":
     # print(mydataset.pyg_graphs)
 
 
-    dataloader = DataLoader(dataset=mydataset, batch_size=2, shuffle=False)
+    dataloader = DataLoader(dataset=mydataset, batch_size=2, shuffle=False, collate_fn=mydataset.collate_fn)
     for item in tqdm(dataloader):
         nodes = item['nodes']
         graphs = item['graphs']

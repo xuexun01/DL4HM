@@ -5,20 +5,20 @@ import networkx as nx
 
 
 class DySAT(nn.Module):
-    def __init__(self, args, num_features, time_length):
+    def __init__(self, config, num_features, time_length):
         super(DySAT, self).__init__()
-        self.args = args
-        if args.window < 0:
+        self.config = config
+        if int(config['window']) < 0:
             self.num_time_steps = time_length
         else:
-            self.num_time_steps = min(time_length, args.window + 1)  # window = 0 => only self.
+            self.num_time_steps = min(time_length, int(config['window']) + 1)  # window = 0 => only self.
         self.num_features = num_features
-        self.structural_head_config = list(map(int, args.structural_head_config.split(",")))
-        self.structural_layer_config = list(map(int, args.structural_layer_config.split(",")))
-        self.temporal_head_config = list(map(int, args.temporal_head_config.split(",")))
-        self.temporal_layer_config = list(map(int, args.temporal_layer_config.split(",")))
-        self.spatial_drop = args.spatial_drop
-        self.temporal_drop = args.temporal_drop
+        self.structural_head_config = list(map(int, config['structural_head_config'].split(",")))
+        self.structural_layer_config = list(map(int, config['structural_layer_config'].split(",")))
+        self.temporal_head_config = list(map(int, config['temporal_head_config'].split(",")))
+        self.temporal_layer_config = list(map(int, config['temporal_layer_config'].split(",")))
+        self.spatial_drop = config['spatial_drop']
+        self.temporal_drop = config['temporal_drop']
         self.structural_attn, self.temporal_attn = self.build_model()
         self.result = nn.Linear(self.temporal_layer_config*2, 1)
 
@@ -44,6 +44,7 @@ class DySAT(nn.Module):
         
         return temporal_out
 
+
     def build_model(self):
         input_dim = self.num_features
 
@@ -55,9 +56,10 @@ class DySAT(nn.Module):
                                              n_heads=self.structural_head_config[i],
                                              attn_drop=self.spatial_drop,
                                              ffd_drop=self.spatial_drop,
-                                             residual=self.args.residual)
+                                             residual=self.config.residual)
             structural_attention_layers.add_module(name="structural_layer_{}".format(i), module=layer)
             input_dim = self.structural_layer_config[i]
+        
         # 2: Temporal Attention Layers
         input_dim = self.structural_layer_config[-1]
         temporal_attention_layers = nn.Sequential()
@@ -66,14 +68,14 @@ class DySAT(nn.Module):
                                            n_heads=self.temporal_head_config[i],
                                            num_time_steps=self.num_time_steps,
                                            attn_drop=self.temporal_drop,
-                                           residual=self.args.residual)
+                                           residual=self.config.residual)
             temporal_attention_layers.add_module(name="temporal_layer_{}".format(i), module=layer)
             input_dim = self.temporal_layer_config[i]
     
         return structural_attention_layers, temporal_attention_layers
     
-    def get_flow(self, items):
-        nodes, graphs = items.values()
+
+    def get_flow(self, nodes, graphs):
         # run gnn
         final_emb = self.forward(graphs) # [N, T, F]
         results = []
@@ -89,4 +91,11 @@ class DySAT(nn.Module):
                     flow = self.result(x)
                     graph.add_edge(origin_node, dest_node, weight=flow)
         results.append(graph)
+        return results
+    
+
+    def predict(time_step = 5):
+        results = []
+        for i in range(0, time_step):
+            pass
         return results
