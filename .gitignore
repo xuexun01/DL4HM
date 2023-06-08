@@ -1,5 +1,7 @@
 # 忽略数据集文件夹
 dataset/
+!dataset/mobility/province/
+
 
 # 忽略日志文件
 *.log
@@ -9,5 +11,3 @@ dataset/
 
 # 忽略存储的模型
 /**/pt
-
-!dataset/mobility/province/
