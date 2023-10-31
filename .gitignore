@@ -1,13 +1,1 @@
-# 忽略数据集文件夹
-dataset/*
-!dataset/mobility
-
-# 忽略日志文件
-*.log
-
-# 忽略本地库编译文件夹
-/**/__pycache__
-
-# 忽略存储的模型
-/**/pt
 
